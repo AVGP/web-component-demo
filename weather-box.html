@@ -1,15 +1,15 @@
 <template>
 <style>
 :host {
-  display: inline-block;
-  width: 250px;
-  padding: 1em;
-  text-align: center;
-  border: 1px solid black;
+  display: inline-block
+  width: 250px
+  padding: 1em
+  text-align: center
+  border: 1px solid black
 }
 #symbol {
-  display: block;
-  margin: 0 auto;
+  display: block
+  margin: 0 auto
 }
 </style>
 <img id='symbol'>
@@ -21,47 +21,69 @@
 
   (function(currentScript) {
 
-    var elemPrototype   = Object.create(HTMLDivElement.prototype);
+    var elemPrototype   = Object.create(HTMLDivElement.prototype)
 
     // Private properties
-    var location = null, units = 'metric';
+    var location = null, units = 'metric'
 
     // Public Properties
     Object.defineProperty(elemPrototype, 'location', {
-      get: function() { return location; },
+      get: function() { return location },
       set: function(newLocation) {
-        location = newLocation;
+        location = newLocation
       }
-    });
+    })
 
     Object.defineProperty(elemPrototype, 'metric', {
-      get: function() { return units === 'metric'; },
+      get: function() { return units === 'metric' },
       set: function(metric) {
-        units = metric ? 'metric' : 'imperial';
+        units = metric ? 'metric' : 'imperial'
       }
-    });
+    })
 
     // Helpers
+
+    function loadWeather(location, units, callback) {
+      var xhr = new XMLHttpRequest()
+      xhr.open('get', 'http://api.openweathermap.org/data/2.5/weather?q=' + location + '&units=' + units)
+      xhr.onload = function() {
+        var weather = JSON.parse(this.responseText)
+        callback(weather)
+      }
+      xhr.send()
+    }
 
     // Lifecycle callbacks
 
     elemPrototype.createdCallback = function() {
-      this.root = this.createShadowRoot();
+      this.root = this.createShadowRoot()
       var tplContent = currentScript.ownerDocument.querySelector('template').content,
-          node       = document.importNode(tplContent, true);
+          node       = document.importNode(tplContent, true)
 
-      this.root.appendChild(node);
-    };
+      this.root.appendChild(node)
+    }
 
     elemPrototype.attachedCallback = function() {
-    };
+      location = this.attributes.location && this.attributes.location.value
+      units    = (this.attributes.metric && this.attributes.metric.value) || 'metric'
+      this.update()
+    }
 
     // Public methods
 
     elemPrototype.update = function() {
       console.log("Updating weather data...")
+      var self = this
+
+      if(location) {
+        loadWeather(location, units, function(weather) {
+          var weatherDesc = weather.weather[0]
+          self.root.querySelector('#symbol').src = 'http://openweathermap.org/img/w/' + weatherDesc.icon + '.png'
+          self.root.querySelector('#mainline').textContent = weatherDesc.description + ' at ' + weather.main.temp.toFixed(2) + '° ' + (units === 'metric' ? 'C' : 'F')
+        })
+      }
     }
 
-    Element = document.registerElement('weather-box', { prototype: elemPrototype });
-  }(document._currentScript || document.currentScript));
+    Element = document.registerElement('weather-box', { prototype: elemPrototype })
+  }(document._currentScript || document.currentScript))
 </script>
