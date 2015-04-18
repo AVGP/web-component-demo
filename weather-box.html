@@ -1,7 +1,21 @@
 <template>
-    <style>
-    </style>
+<style>
+:host {
+  display: inline-block;
+  width: 250px;
+  padding: 1em;
+  text-align: center;
+  border: 1px solid black;
+}
+#symbol {
+  display: block;
+  margin: 0 auto;
+}
+</style>
+<img id='symbol'>
+<p id='mainline'></p>
 </template>
+
 <script>
   var WeatherBox = null;
 
@@ -10,8 +24,22 @@
     var elemPrototype   = Object.create(HTMLDivElement.prototype);
 
     // Private properties
+    var location = null, units = 'metric';
 
     // Public Properties
+    Object.defineProperty(elemPrototype, 'location', {
+      get: function() { return location; },
+      set: function(newLocation) {
+        location = newLocation;
+      }
+    });
+
+    Object.defineProperty(elemPrototype, 'metric', {
+      get: function() { return units === 'metric'; },
+      set: function(metric) {
+        units = metric ? 'metric' : 'imperial';
+      }
+    });
 
     // Helpers
 
@@ -27,6 +55,12 @@
 
     elemPrototype.attachedCallback = function() {
     };
+
+    // Public methods
+
+    elemPrototype.update = function() {
+      console.log("Updating weather data...")
+    }
 
     Element = document.registerElement('weather-box', { prototype: elemPrototype });
   }(document._currentScript || document.currentScript));
