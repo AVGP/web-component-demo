@@ -1,0 +1,33 @@
+<template>
+    <style>
+    </style>
+</template>
+<script>
+  var WeatherBox = null;
+
+  (function(currentScript) {
+
+    var elemPrototype   = Object.create(HTMLDivElement.prototype);
+
+    // Private properties
+
+    // Public Properties
+
+    // Helpers
+
+    // Lifecycle callbacks
+
+    elemPrototype.createdCallback = function() {
+      this.root = this.createShadowRoot();
+      var tplContent = currentScript.ownerDocument.querySelector('template').content,
+          node       = document.importNode(tplContent, true);
+
+      this.root.appendChild(node);
+    };
+
+    elemPrototype.attachedCallback = function() {
+    };
+
+    Element = document.registerElement('weather-box', { prototype: elemPrototype });
+  }(document._currentScript || document.currentScript));
+</script>
