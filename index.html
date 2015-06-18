@@ -2,6 +2,10 @@
 <html>
 <head>
   <link rel="import" href="weather-box.html">
+  <link rel="import" href="http://components.geekonaut.de/x-tabs/x-tabs.html">
+  <link rel="import" href="http://components.geekonaut.de/x-tabs/x-tab.html">
+  <link rel="import" href="http://components.geekonaut.de/code-editor/code-editor.html">
+  <link rel="import" href="http://geelen.github.io/x-gif/dist/x-gif.html">
   <style>
   weather-box {
     border: 2px dashed green;
@@ -11,9 +15,42 @@
   weather-box::shadow img {
     width: 100%;
   }
+
+  x-tabs {
+    width: 500px;
+    height: 500px;
+    border: 1px solid red;
+    padding: 0.2em;
+  }
   </style>
 </head>
 <body>
-  <weather-box location="Zurich, CH" metric="yes">Sorry, your browser does not support the weather box!</weather-box>
+  <x-tabs>
+    <x-tab label="Code">
+      <h2>Code</h2>
+      <code-editor mode="javascript">
+var msg = "Hello enterJS!";
+alert(msg);
+      </code-editor>
+    </x-tab>
+
+    <x-tab label="Weather">
+      <h2>Das Wetter in Darmstadt</h2>
+      <weather-box location="Darmstadt, DE">
+        Sorry, your browser does not support the weather box!
+      </weather-box>
+    </x-tab>
+
+    <x-tab label="Cuteness">
+      <x-gif src="http://i.imgur.com/YGCxbA6.gif" speed="1.0" id="gif"></x-gif><br />
+      <input type="range" min="0.5" max="5" step="0.5" id="speed" value="1">
+      <script>
+        document.getElementById("speed").addEventListener('input', function() {
+          console.log('ok')
+          document.getElementById("gif").attributes.speed.value = this.value;
+        })
+      </script>
+    </x-tab>
+  </x-tabs>
 </body>
 </html>
